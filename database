@@ -1,0 +1,1224 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.8
+-- Dumped by pg_dump version 17.0
+
+-- Started on 2025-01-21 17:26:30 CET
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 7 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: azure_pg_admin
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO azure_pg_admin;
+
+--
+-- TOC entry 3 (class 3079 OID 24750)
+-- Name: azure; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS azure WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 4085 (class 0 OID 0)
+-- Dependencies: 3
+-- Name: EXTENSION azure; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION azure IS 'azure extension for PostgreSQL service';
+
+
+--
+-- TOC entry 2 (class 3079 OID 24577)
+-- Name: pgaadauth; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgaadauth WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 4086 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION pgaadauth; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pgaadauth IS 'Azure Active Directory Authentication';
+
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 219 (class 1259 OID 24911)
+-- Name: food; Type: TABLE; Schema: public; Owner: hackhaton
+--
+
+CREATE TABLE public.food (
+    id integer NOT NULL,
+    title character varying,
+    body text,
+    carbon double precision,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.food OWNER TO hackhaton;
+
+--
+-- TOC entry 4162 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN food.body; Type: COMMENT; Schema: public; Owner: hackhaton
+--
+
+COMMENT ON COLUMN public.food.body IS 'Contenu de l''article';
+
+
+--
+-- TOC entry 218 (class 1259 OID 24910)
+-- Name: food_id_seq; Type: SEQUENCE; Schema: public; Owner: hackhaton
+--
+
+CREATE SEQUENCE public.food_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.food_id_seq OWNER TO hackhaton;
+
+--
+-- TOC entry 4163 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: food_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: hackhaton
+--
+
+ALTER SEQUENCE public.food_id_seq OWNED BY public.food.id;
+
+
+--
+-- TOC entry 221 (class 1259 OID 24920)
+-- Name: history; Type: TABLE; Schema: public; Owner: hackhaton
+--
+
+CREATE TABLE public.history (
+    id integer NOT NULL,
+    user_id integer,
+    food_id integer,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.history OWNER TO hackhaton;
+
+--
+-- TOC entry 220 (class 1259 OID 24919)
+-- Name: history_id_seq; Type: SEQUENCE; Schema: public; Owner: hackhaton
+--
+
+CREATE SEQUENCE public.history_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.history_id_seq OWNER TO hackhaton;
+
+--
+-- TOC entry 4164 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: hackhaton
+--
+
+ALTER SEQUENCE public.history_id_seq OWNED BY public.history.id;
+
+
+--
+-- TOC entry 217 (class 1259 OID 24902)
+-- Name: users; Type: TABLE; Schema: public; Owner: hackhaton
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    email character varying,
+    fullname character varying,
+    password character varying,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.users OWNER TO hackhaton;
+
+--
+-- TOC entry 216 (class 1259 OID 24901)
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: hackhaton
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.users_id_seq OWNER TO hackhaton;
+
+--
+-- TOC entry 4165 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: hackhaton
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- TOC entry 3922 (class 2604 OID 24914)
+-- Name: food id; Type: DEFAULT; Schema: public; Owner: hackhaton
+--
+
+ALTER TABLE ONLY public.food ALTER COLUMN id SET DEFAULT nextval('public.food_id_seq'::regclass);
+
+
+--
+-- TOC entry 3923 (class 2604 OID 24923)
+-- Name: history id; Type: DEFAULT; Schema: public; Owner: hackhaton
+--
+
+ALTER TABLE ONLY public.history ALTER COLUMN id SET DEFAULT nextval('public.history_id_seq'::regclass);
+
+
+--
+-- TOC entry 3921 (class 2604 OID 24905)
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: hackhaton
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- TOC entry 4077 (class 0 OID 24911)
+-- Dependencies: 219
+-- Data for Name: food; Type: TABLE DATA; Schema: public; Owner: hackhaton
+--
+
+COPY public.food (id, title, body, carbon, "createdAt", "updatedAt") FROM stdin;
+1	Ale	\N	0.4886898688	\N	\N
+2	Almond butter	\N	0.3870113077	\N	\N
+3	Almond milk	\N	0.6558875395	\N	\N
+4	Almonds	\N	0.6023678597	\N	\N
+5	Apple juice	\N	0.4583784	\N	\N
+6	Apple pie	\N	1.2449736986	\N	\N
+7	Apples	\N	0.5073538974	\N	\N
+8	Apricot jam	\N	1.38210509	\N	\N
+9	Asparagus	\N	0.9256918167	\N	\N
+10	Avocados	\N	0.9212270935	\N	\N
+11	Bacon	\N	19.3142090123	\N	\N
+12	Bagels	\N	0.8028126	\N	\N
+13	Baguette	\N	0.9956444216	\N	\N
+14	Banana loaf	\N	1.8687873556	\N	\N
+15	Bananas	\N	0.8733495729	\N	\N
+16	Beans	\N	1.3733080129	\N	\N
+17	Beef burger	\N	53.9763707559	\N	\N
+18	Beef curry	\N	17.3687247856	\N	\N
+19	Beef meatballs	\N	70.7874741504	\N	\N
+20	Beef mince	\N	95.0345722732	\N	\N
+21	Beef noodles	\N	2.290114275	\N	\N
+22	Beef steak	\N	129.747714826	\N	\N
+23	Beer	\N	0.6862832217	\N	\N
+24	Beetroot	\N	2.6582406426	\N	\N
+25	Biscuits	\N	3.9892505373	\N	\N
+26	Blue cheese	\N	20.1057533063	\N	\N
+27	Brazil nuts	\N	2.5130514357	\N	\N
+28	Bread	\N	0.8787608465	\N	\N
+29	Breakfast cereal	\N	1.4934272761	\N	\N
+30	Brie	\N	19.1395814341	\N	\N
+31	Broccoli	\N	0.8974015212	\N	\N
+32	Butter	\N	3.324503183	\N	\N
+33	Cabbage	\N	0.890284071	\N	\N
+34	Caesar salad	\N	2.0791893427	\N	\N
+35	Camembert	\N	16.2814304628	\N	\N
+36	Carrot cake	\N	2.0107220067	\N	\N
+37	Carrots	\N	0.935163376	\N	\N
+38	Cashew nuts	\N	2.0876442506	\N	\N
+39	Cauliflower	\N	0.8917262455	\N	\N
+40	Cereal bars	\N	2.8533841637	\N	\N
+41	Cheddar cheese	\N	20.7490445367	\N	\N
+42	Cheesecake	\N	2.3693018444	\N	\N
+43	Cherry tomatoes	\N	2.26636	\N	\N
+44	Chia seeds	\N	1.2205535	\N	\N
+45	Chicken breast	\N	9.2723233082	\N	\N
+46	Chicken burger	\N	5.4344868456	\N	\N
+47	Chicken curry	\N	3.6165459862	\N	\N
+48	Chicken noodles	\N	2.3839957046	\N	\N
+49	Chicken pasta	\N	2.9467645567	\N	\N
+50	Chicken sausages	\N	8.1643024859	\N	\N
+51	Chicken thighs	\N	9.9818813019	\N	\N
+52	Chicken wings	\N	9.5834562195	\N	\N
+53	Chickpeas	\N	1.3443528667	\N	\N
+54	Chilli con carne	\N	13.54080492	\N	\N
+55	Chocolate biscuits	\N	5.0836790018	\N	\N
+56	Chocolate cake	\N	3.952117878	\N	\N
+57	Chocolate cereals	\N	2.8776255586	\N	\N
+58	Chocolate cheesecake	\N	4.9004238333	\N	\N
+59	Chocolate spread	\N	5.3723003938	\N	\N
+60	Cider	\N	1.0816328667	\N	\N
+61	Coconut milk	\N	3.3199897818	\N	\N
+62	Coconut oil	\N	0.528741281	\N	\N
+63	Cod	\N	10.9041093074	\N	\N
+64	Cod fish fingers	\N	9.3131815662	\N	\N
+65	Cod fishcakes	\N	7.8156751083	\N	\N
+66	Coffee beans	\N	16.8246082858	\N	\N
+67	Coffee pods	\N	20.2997635579	\N	\N
+68	Cookies	\N	3.3572777805	\N	\N
+69	Cottage cheese	\N	25.2785031405	\N	\N
+70	Cottage pie	\N	11.8512712889	\N	\N
+71	Courgettes	\N	0.8464794231	\N	\N
+72	Couscous	\N	1.1579787752	\N	\N
+73	Cow's milk	\N	3.7032366273	\N	\N
+74	Cracker biscuits	\N	2.4484662922	\N	\N
+75	Crisps	\N	3.0317244479	\N	\N
+76	Croissants	\N	1.6822277804	\N	\N
+77	Cucumber	\N	0.8471137361	\N	\N
+78	Dairy-free cheese	\N	1.976174015	\N	\N
+79	Dairy-free ice cream	\N	2.4511965433	\N	\N
+80	Dark chocolate	\N	20.6200366414	\N	\N
+81	Doughnuts	\N	2.1996649345	\N	\N
+82	Egg noodles	\N	1.3815115279	\N	\N
+83	Eggs	\N	4.4366000704	\N	\N
+84	Falafels	\N	1.098106175	\N	\N
+85	Feta cheese	\N	14.8386091677	\N	\N
+86	Flapjack	\N	1.9476826133	\N	\N
+87	Frozen chips (french fries)	\N	0.7534718474	\N	\N
+88	Frozen jacket potatoes	\N	0.5175197588	\N	\N
+89	Frozen mashed potato	\N	0.8266427091	\N	\N
+90	Frozen onion rings	\N	0.7711746933	\N	\N
+91	Frozen potato wedges	\N	0.66477544	\N	\N
+92	Frozen roast potatoes	\N	1.2034171439	\N	\N
+93	Frozen sweet potato fries	\N	0.4098848176	\N	\N
+94	Fruit cake	\N	3.4521160655	\N	\N
+95	Fruit smoothies	\N	1.6489147438	\N	\N
+96	Garden peas	\N	1.0038367313	\N	\N
+97	Goat's cheese	\N	19.3120730189	\N	\N
+98	Granola	\N	1.7811926156	\N	\N
+99	Grapes	\N	8.278876373	\N	\N
+100	Haddock risotto	\N	4.8988910667	\N	\N
+101	Halloumi cheese	\N	16.1724523933	\N	\N
+102	Ice cream	\N	3.6618094538	\N	\N
+103	Ice lollies	\N	1.3143929375	\N	\N
+104	Instant coffee	\N	28.7836413167	\N	\N
+105	Kale	\N	0.9034191735	\N	\N
+106	Kiwis	\N	1.6137066606	\N	\N
+107	Lamb (leg)	\N	30.7409472552	\N	\N
+108	Lamb Hotpot	\N	11.2262536626	\N	\N
+109	Lamb burgers	\N	26.928288699	\N	\N
+110	Lamb casserole	\N	30.87731	\N	\N
+111	Lamb chops	\N	30.9019929412	\N	\N
+112	Lamb curry	\N	10.1925647022	\N	\N
+113	Lamb moussaka	\N	7.25916164	\N	\N
+114	Lasagne sheets	\N	1.96138175	\N	\N
+115	Lemons	\N	0.47015286	\N	\N
+116	Lentils	\N	2.5365202189	\N	\N
+117	Lettuce	\N	4.9260231265	\N	\N
+118	Limes	\N	0.4630078571	\N	\N
+119	Macaroni cheese	\N	16.849313125	\N	\N
+120	Mackerel	\N	13.606384472	\N	\N
+121	Marmalade	\N	1.5489212746	\N	\N
+122	Meat pizza	\N	7.4006599034	\N	\N
+123	Meat-free burger	\N	1.0183294724	\N	\N
+124	Meat-free mince	\N	0.8770376238	\N	\N
+125	Meat-free nuggets	\N	0.8618467304	\N	\N
+126	Meat-free sausages	\N	0.9625576707	\N	\N
+127	Melon	\N	1.0565359744	\N	\N
+128	Milk chocolate	\N	10.8002748249	\N	\N
+129	Mixed salad	\N	0.9209	\N	\N
+130	Mozzarella cheese	\N	16.2331999633	\N	\N
+131	Muesli	\N	2.2719105708	\N	\N
+132	Muffins	\N	2.5836309558	\N	\N
+133	Mushrooms	\N	2.352916674	\N	\N
+134	Naan	\N	1.0132342196	\N	\N
+135	Nut loaf	\N	0.7161309571	\N	\N
+136	Oat milk	\N	0.4532805909	\N	\N
+137	Olive oil	\N	5.1846282314	\N	\N
+138	Onions	\N	0.3628603478	\N	\N
+139	Orange juice	\N	0.488848406	\N	\N
+140	Oranges	\N	0.4665495395	\N	\N
+141	Pain au chocolat	\N	2.8095122264	\N	\N
+142	Pancakes	\N	1.5478088875	\N	\N
+143	Parmesan cheese	\N	24.0164798269	\N	\N
+144	Parsnips	\N	0.989606512	\N	\N
+145	Pasta shells	\N	1.0255827667	\N	\N
+146	Peanut butter	\N	3.4349602023	\N	\N
+147	Peanuts	\N	3.1462268522	\N	\N
+148	Pears	\N	0.925555374	\N	\N
+149	Pecan nuts	\N	2.5159416211	\N	\N
+150	Penne pasta	\N	1.6251067504	\N	\N
+151	Peppers	\N	0.9186621429	\N	\N
+152	Pineapple	\N	0.9320080325	\N	\N
+153	Pitta bread	\N	0.5635607857	\N	\N
+154	Popcorn	\N	1.813625906	\N	\N
+155	Poppadoms	\N	1.50061802	\N	\N
+156	Pork chops	\N	12.1638908447	\N	\N
+157	Pork loin	\N	11.9765144902	\N	\N
+158	Pork sausage rolls	\N	6.186894385	\N	\N
+159	Pork sausages	\N	9.7678780202	\N	\N
+160	Porridge (oatmeal)	\N	1.5551690241	\N	\N
+161	Potato croquettes	\N	0.7742251222	\N	\N
+162	Potatoes	\N	0.2072761621	\N	\N
+163	Prawn crackers	\N	4.93285324	\N	\N
+164	Prawns	\N	20.9112827826	\N	\N
+165	Protein bar	\N	3.3728507867	\N	\N
+166	Protein shake	\N	1.7437289185	\N	\N
+167	Pumpkin seeds	\N	1.3239754169	\N	\N
+168	Quiche	\N	4.6668326556	\N	\N
+169	Quinoa	\N	1.1386422326	\N	\N
+170	Rapeseed oil	\N	3.2886954222	\N	\N
+171	Raspberries	\N	8.3709720025	\N	\N
+172	Raspberry jam	\N	5.1073375931	\N	\N
+173	Rice	\N	3.9259098012	\N	\N
+174	Rice milk	\N	1.4417970767	\N	\N
+175	Rice noodles	\N	3.4111261143	\N	\N
+176	Ricotta cheese	\N	16.2949735895	\N	\N
+177	Salmon	\N	10.4125814736	\N	\N
+178	Salmon fishcakes	\N	6.5057346583	\N	\N
+179	Sausage rolls	\N	5.8495493	\N	\N
+180	Shepherd's pie	\N	7.7371248143	\N	\N
+181	Shortbread biscuits	\N	2.2237825833	\N	\N
+182	Sourdough bread	\N	0.8511672736	\N	\N
+183	Soy desert	\N	1.0872644037	\N	\N
+184	Soy milk	\N	0.893107838	\N	\N
+185	Soy yoghurt	\N	0.4960198167	\N	\N
+186	Spaghetti	\N	1.6460149466	\N	\N
+187	Spaghetti bolognese	\N	7.83470288	\N	\N
+188	Spinach	\N	1.0091279448	\N	\N
+189	Sponge cake	\N	1.8774483783	\N	\N
+190	Steak pie	\N	7.10186367	\N	\N
+191	Strawberries	\N	3.241715	\N	\N
+192	Strawberry jam	\N	2.5966625545	\N	\N
+193	Sugar	\N	1.8516856682	\N	\N
+194	Sunflower oil	\N	3.6613972143	\N	\N
+195	Sunflower seeds	\N	1.9344241125	\N	\N
+196	Sweetcorn	\N	0.9712034778	\N	\N
+197	Tea	\N	17.6210435202	\N	\N
+198	Tofu	\N	1.0208654567	\N	\N
+199	Tomato ketchup	\N	2.6097942119	\N	\N
+200	Tomatoes	\N	2.2715154562	\N	\N
+201	Tortilla wraps	\N	0.9485836667	\N	\N
+202	Tuna	\N	13.0753549103	\N	\N
+203	Vegan pizza	\N	1.9481036491	\N	\N
+204	Vegetable lasagne	\N	3.37614065	\N	\N
+205	Vegetarian chilli con carne	\N	1.4292908167	\N	\N
+206	Vegetarian curry	\N	1.3091650341	\N	\N
+207	Vegetarian pizza	\N	5.2329757201	\N	\N
+208	Walnuts	\N	2.4163077789	\N	\N
+209	Watermelon	\N	0.96940275	\N	\N
+210	Wine	\N	1.7228808272	\N	\N
+211	Yoghurt	\N	3.1118107312	\N	\N
+\.
+
+
+--
+-- TOC entry 4079 (class 0 OID 24920)
+-- Dependencies: 221
+-- Data for Name: history; Type: TABLE DATA; Schema: public; Owner: hackhaton
+--
+
+COPY public.history (id, user_id, food_id, "createdAt", "updatedAt") FROM stdin;
+\.
+
+
+--
+-- TOC entry 4075 (class 0 OID 24902)
+-- Dependencies: 217
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: hackhaton
+--
+
+COPY public.users (id, email, fullname, password, "createdAt", "updatedAt") FROM stdin;
+1	thomasgrare64@gmail.com	thomas	$2b$10$EVnaYe4I9yiT3zSWyt6NOun3HUZDSjKcu4aave1xEc/ILlg6fFt32	2025-01-20 16:14:05.719	2025-01-20 16:14:05.719
+3	monke@gmail.com	testmonke	$2b$10$DO5LgPVoX7ikWEJMyWHstO1yGThndB8KeFNkexBTszfRlCG0cvV0K	2025-01-20 23:29:39.005	2025-01-20 23:29:39.005
+2	test@gmail.com	John	$2b$10$tlgBzfu7e5uaNzl0PKy4fOezV7DSRO48gPGfsJhOWlUDFCNjLWY5u	2025-01-20 16:16:55.655	2025-01-21 10:54:43.293
+\.
+
+
+--
+-- TOC entry 4166 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: food_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackhaton
+--
+
+SELECT pg_catalog.setval('public.food_id_seq', 1, false);
+
+
+--
+-- TOC entry 4167 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackhaton
+--
+
+SELECT pg_catalog.setval('public.history_id_seq', 1, false);
+
+
+--
+-- TOC entry 4168 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackhaton
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 3, true);
+
+
+--
+-- TOC entry 3927 (class 2606 OID 24918)
+-- Name: food food_pkey; Type: CONSTRAINT; Schema: public; Owner: hackhaton
+--
+
+ALTER TABLE ONLY public.food
+    ADD CONSTRAINT food_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3929 (class 2606 OID 24925)
+-- Name: history history_pkey; Type: CONSTRAINT; Schema: public; Owner: hackhaton
+--
+
+ALTER TABLE ONLY public.history
+    ADD CONSTRAINT history_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3925 (class 2606 OID 24909)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: hackhaton
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3930 (class 2606 OID 24931)
+-- Name: history history_food_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: hackhaton
+--
+
+ALTER TABLE ONLY public.history
+    ADD CONSTRAINT history_food_id_fkey FOREIGN KEY (food_id) REFERENCES public.food(id);
+
+
+--
+-- TOC entry 3931 (class 2606 OID 24926)
+-- Name: history history_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: hackhaton
+--
+
+ALTER TABLE ONLY public.history
+    ADD CONSTRAINT history_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- TOC entry 4087 (class 0 OID 0)
+-- Dependencies: 230
+-- Name: FUNCTION pg_replication_origin_advance(text, pg_lsn); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_replication_origin_advance(text, pg_lsn) TO azure_pg_admin;
+
+
+--
+-- TOC entry 4088 (class 0 OID 0)
+-- Dependencies: 234
+-- Name: FUNCTION pg_replication_origin_create(text); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_replication_origin_create(text) TO azure_pg_admin;
+
+
+--
+-- TOC entry 4089 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: FUNCTION pg_replication_origin_drop(text); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_replication_origin_drop(text) TO azure_pg_admin;
+
+
+--
+-- TOC entry 4090 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: FUNCTION pg_replication_origin_oid(text); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_replication_origin_oid(text) TO azure_pg_admin;
+
+
+--
+-- TOC entry 4091 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: FUNCTION pg_replication_origin_progress(text, boolean); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_replication_origin_progress(text, boolean) TO azure_pg_admin;
+
+
+--
+-- TOC entry 4092 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: FUNCTION pg_replication_origin_session_is_setup(); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_replication_origin_session_is_setup() TO azure_pg_admin;
+
+
+--
+-- TOC entry 4093 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: FUNCTION pg_replication_origin_session_progress(boolean); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_replication_origin_session_progress(boolean) TO azure_pg_admin;
+
+
+--
+-- TOC entry 4094 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: FUNCTION pg_replication_origin_session_reset(); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_replication_origin_session_reset() TO azure_pg_admin;
+
+
+--
+-- TOC entry 4095 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: FUNCTION pg_replication_origin_session_setup(text); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_replication_origin_session_setup(text) TO azure_pg_admin;
+
+
+--
+-- TOC entry 4096 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: FUNCTION pg_replication_origin_xact_reset(); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_replication_origin_xact_reset() TO azure_pg_admin;
+
+
+--
+-- TOC entry 4097 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: FUNCTION pg_replication_origin_xact_setup(pg_lsn, timestamp with time zone); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_replication_origin_xact_setup(pg_lsn, timestamp with time zone) TO azure_pg_admin;
+
+
+--
+-- TOC entry 4098 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: FUNCTION pg_show_replication_origin_status(OUT local_id oid, OUT external_id text, OUT remote_lsn pg_lsn, OUT local_lsn pg_lsn); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_show_replication_origin_status(OUT local_id oid, OUT external_id text, OUT remote_lsn pg_lsn, OUT local_lsn pg_lsn) TO azure_pg_admin;
+
+
+--
+-- TOC entry 4099 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: FUNCTION pg_stat_reset(); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_stat_reset() TO azure_pg_admin;
+
+
+--
+-- TOC entry 4100 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: FUNCTION pg_stat_reset_shared(text); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_stat_reset_shared(text) TO azure_pg_admin;
+
+
+--
+-- TOC entry 4101 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: FUNCTION pg_stat_reset_single_function_counters(oid); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_stat_reset_single_function_counters(oid) TO azure_pg_admin;
+
+
+--
+-- TOC entry 4102 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: FUNCTION pg_stat_reset_single_table_counters(oid); Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_stat_reset_single_table_counters(oid) TO azure_pg_admin;
+
+
+--
+-- TOC entry 4103 (class 0 OID 0)
+-- Dependencies: 100
+-- Name: COLUMN pg_config.name; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(name) ON TABLE pg_catalog.pg_config TO azure_pg_admin;
+
+
+--
+-- TOC entry 4104 (class 0 OID 0)
+-- Dependencies: 100
+-- Name: COLUMN pg_config.setting; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(setting) ON TABLE pg_catalog.pg_config TO azure_pg_admin;
+
+
+--
+-- TOC entry 4105 (class 0 OID 0)
+-- Dependencies: 96
+-- Name: COLUMN pg_hba_file_rules.line_number; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(line_number) ON TABLE pg_catalog.pg_hba_file_rules TO azure_pg_admin;
+
+
+--
+-- TOC entry 4106 (class 0 OID 0)
+-- Dependencies: 96
+-- Name: COLUMN pg_hba_file_rules.type; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(type) ON TABLE pg_catalog.pg_hba_file_rules TO azure_pg_admin;
+
+
+--
+-- TOC entry 4107 (class 0 OID 0)
+-- Dependencies: 96
+-- Name: COLUMN pg_hba_file_rules.database; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(database) ON TABLE pg_catalog.pg_hba_file_rules TO azure_pg_admin;
+
+
+--
+-- TOC entry 4108 (class 0 OID 0)
+-- Dependencies: 96
+-- Name: COLUMN pg_hba_file_rules.user_name; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(user_name) ON TABLE pg_catalog.pg_hba_file_rules TO azure_pg_admin;
+
+
+--
+-- TOC entry 4109 (class 0 OID 0)
+-- Dependencies: 96
+-- Name: COLUMN pg_hba_file_rules.address; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(address) ON TABLE pg_catalog.pg_hba_file_rules TO azure_pg_admin;
+
+
+--
+-- TOC entry 4110 (class 0 OID 0)
+-- Dependencies: 96
+-- Name: COLUMN pg_hba_file_rules.netmask; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(netmask) ON TABLE pg_catalog.pg_hba_file_rules TO azure_pg_admin;
+
+
+--
+-- TOC entry 4111 (class 0 OID 0)
+-- Dependencies: 96
+-- Name: COLUMN pg_hba_file_rules.auth_method; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(auth_method) ON TABLE pg_catalog.pg_hba_file_rules TO azure_pg_admin;
+
+
+--
+-- TOC entry 4112 (class 0 OID 0)
+-- Dependencies: 96
+-- Name: COLUMN pg_hba_file_rules.options; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(options) ON TABLE pg_catalog.pg_hba_file_rules TO azure_pg_admin;
+
+
+--
+-- TOC entry 4113 (class 0 OID 0)
+-- Dependencies: 96
+-- Name: COLUMN pg_hba_file_rules.error; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(error) ON TABLE pg_catalog.pg_hba_file_rules TO azure_pg_admin;
+
+
+--
+-- TOC entry 4114 (class 0 OID 0)
+-- Dependencies: 145
+-- Name: COLUMN pg_replication_origin_status.local_id; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(local_id) ON TABLE pg_catalog.pg_replication_origin_status TO azure_pg_admin;
+
+
+--
+-- TOC entry 4115 (class 0 OID 0)
+-- Dependencies: 145
+-- Name: COLUMN pg_replication_origin_status.external_id; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(external_id) ON TABLE pg_catalog.pg_replication_origin_status TO azure_pg_admin;
+
+
+--
+-- TOC entry 4116 (class 0 OID 0)
+-- Dependencies: 145
+-- Name: COLUMN pg_replication_origin_status.remote_lsn; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(remote_lsn) ON TABLE pg_catalog.pg_replication_origin_status TO azure_pg_admin;
+
+
+--
+-- TOC entry 4117 (class 0 OID 0)
+-- Dependencies: 145
+-- Name: COLUMN pg_replication_origin_status.local_lsn; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(local_lsn) ON TABLE pg_catalog.pg_replication_origin_status TO azure_pg_admin;
+
+
+--
+-- TOC entry 4118 (class 0 OID 0)
+-- Dependencies: 101
+-- Name: COLUMN pg_shmem_allocations.name; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(name) ON TABLE pg_catalog.pg_shmem_allocations TO azure_pg_admin;
+
+
+--
+-- TOC entry 4119 (class 0 OID 0)
+-- Dependencies: 101
+-- Name: COLUMN pg_shmem_allocations.off; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(off) ON TABLE pg_catalog.pg_shmem_allocations TO azure_pg_admin;
+
+
+--
+-- TOC entry 4120 (class 0 OID 0)
+-- Dependencies: 101
+-- Name: COLUMN pg_shmem_allocations.size; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(size) ON TABLE pg_catalog.pg_shmem_allocations TO azure_pg_admin;
+
+
+--
+-- TOC entry 4121 (class 0 OID 0)
+-- Dependencies: 101
+-- Name: COLUMN pg_shmem_allocations.allocated_size; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(allocated_size) ON TABLE pg_catalog.pg_shmem_allocations TO azure_pg_admin;
+
+
+--
+-- TOC entry 4122 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.starelid; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(starelid) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4123 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.staattnum; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(staattnum) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4124 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stainherit; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stainherit) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4125 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stanullfrac; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stanullfrac) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4126 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stawidth; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stawidth) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4127 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stadistinct; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stadistinct) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4128 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stakind1; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stakind1) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4129 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stakind2; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stakind2) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4130 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stakind3; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stakind3) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4131 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stakind4; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stakind4) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4132 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stakind5; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stakind5) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4133 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.staop1; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(staop1) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4134 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.staop2; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(staop2) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4135 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.staop3; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(staop3) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4136 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.staop4; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(staop4) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4137 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.staop5; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(staop5) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4138 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stacoll1; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stacoll1) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4139 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stacoll2; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stacoll2) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4140 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stacoll3; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stacoll3) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4141 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stacoll4; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stacoll4) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4142 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stacoll5; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stacoll5) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4143 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stanumbers1; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stanumbers1) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4144 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stanumbers2; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stanumbers2) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4145 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stanumbers3; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stanumbers3) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4146 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stanumbers4; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stanumbers4) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4147 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stanumbers5; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stanumbers5) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4148 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stavalues1; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stavalues1) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4149 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stavalues2; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stavalues2) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4150 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stavalues3; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stavalues3) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4151 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stavalues4; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stavalues4) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4152 (class 0 OID 0)
+-- Dependencies: 41
+-- Name: COLUMN pg_statistic.stavalues5; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(stavalues5) ON TABLE pg_catalog.pg_statistic TO azure_pg_admin;
+
+
+--
+-- TOC entry 4153 (class 0 OID 0)
+-- Dependencies: 66
+-- Name: COLUMN pg_subscription.oid; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(oid) ON TABLE pg_catalog.pg_subscription TO azure_pg_admin;
+
+
+--
+-- TOC entry 4154 (class 0 OID 0)
+-- Dependencies: 66
+-- Name: COLUMN pg_subscription.subdbid; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(subdbid) ON TABLE pg_catalog.pg_subscription TO azure_pg_admin;
+
+
+--
+-- TOC entry 4155 (class 0 OID 0)
+-- Dependencies: 66
+-- Name: COLUMN pg_subscription.subname; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(subname) ON TABLE pg_catalog.pg_subscription TO azure_pg_admin;
+
+
+--
+-- TOC entry 4156 (class 0 OID 0)
+-- Dependencies: 66
+-- Name: COLUMN pg_subscription.subowner; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(subowner) ON TABLE pg_catalog.pg_subscription TO azure_pg_admin;
+
+
+--
+-- TOC entry 4157 (class 0 OID 0)
+-- Dependencies: 66
+-- Name: COLUMN pg_subscription.subenabled; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(subenabled) ON TABLE pg_catalog.pg_subscription TO azure_pg_admin;
+
+
+--
+-- TOC entry 4158 (class 0 OID 0)
+-- Dependencies: 66
+-- Name: COLUMN pg_subscription.subconninfo; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(subconninfo) ON TABLE pg_catalog.pg_subscription TO azure_pg_admin;
+
+
+--
+-- TOC entry 4159 (class 0 OID 0)
+-- Dependencies: 66
+-- Name: COLUMN pg_subscription.subslotname; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(subslotname) ON TABLE pg_catalog.pg_subscription TO azure_pg_admin;
+
+
+--
+-- TOC entry 4160 (class 0 OID 0)
+-- Dependencies: 66
+-- Name: COLUMN pg_subscription.subsynccommit; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(subsynccommit) ON TABLE pg_catalog.pg_subscription TO azure_pg_admin;
+
+
+--
+-- TOC entry 4161 (class 0 OID 0)
+-- Dependencies: 66
+-- Name: COLUMN pg_subscription.subpublications; Type: ACL; Schema: pg_catalog; Owner: azuresu
+--
+
+GRANT SELECT(subpublications) ON TABLE pg_catalog.pg_subscription TO azure_pg_admin;
+
+
+-- Completed on 2025-01-21 17:26:31 CET
+
+--
+-- PostgreSQL database dump complete
+--
+
